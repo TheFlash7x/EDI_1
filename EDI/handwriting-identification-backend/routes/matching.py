@@ -1,14 +1,15 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from models import MatchResult
 from ai_model import match_handwriting, extract_features
 from utils import get_image_features
 from fastapi import Request
+from .auth import require_auth
 
 router = APIRouter()
 
 @router.post("/match/{case_id}", response_model=List[MatchResult])
-async def match_case(case_id: str, request: Request):
+async def match_case(case_id: str, request: Request, user=Depends(require_auth)):
     db = request.app.mongodb
 
     # Get case

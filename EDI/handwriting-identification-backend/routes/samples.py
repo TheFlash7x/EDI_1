@@ -4,6 +4,7 @@ from models import HandwritingSample
 from utils import save_uploaded_image, preprocess_handwriting_image
 from fastapi import Request
 from uuid import uuid4
+from .auth import require_auth
 import os
 from pathlib import Path
 
@@ -17,7 +18,8 @@ async def upload_sample(
     file: UploadFile = File(...),
     person_id: Optional[str] = Form(None),
     case_id: Optional[str] = Form(None),
-    request: Request = None
+    request: Request = None,
+    user=Depends(require_auth)
 ):
     # Ensure upload directories exist
     Path(UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
@@ -52,7 +54,7 @@ async def upload_sample(
     return sample
 
 @router.get("/{sample_id}", response_model=HandwritingSample)
-async def get_sample(sample_id: str, request: Request):
+async def get_sample(sample_id: str, request: Request, user=Depends(require_auth)):
     db = request.app.mongodb
     sample_data = await db.samples.find_one({"sample_id": sample_id})
     if not sample_data:
