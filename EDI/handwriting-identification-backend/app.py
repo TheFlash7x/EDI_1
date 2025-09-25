@@ -3,7 +3,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from config import settings
 from routes import cases, samples, matching, persons, training
-from routes import auth
 from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
@@ -23,7 +22,6 @@ async def lifespan(app: FastAPI):
 app.router.lifespan_context = lifespan
 
 # Include API routers under /api
-app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(cases.router, prefix="/api/cases", tags=["cases"])
 app.include_router(samples.router, prefix="/api/samples", tags=["samples"])
 app.include_router(matching.router, prefix="/api/matching", tags=["matching"])
