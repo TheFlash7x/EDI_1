@@ -1,17 +1,18 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from models import Person
 from typing import List
+from .auth import require_auth
 
 router = APIRouter()
 
 @router.post("/", response_model=Person)
-async def create_person(person: Person, request: Request):
+async def create_person(person: Person, request: Request, user=Depends(require_auth)):
     db = request.app.mongodb
     await db.persons.insert_one(person.model_dump())
     return person
 
 @router.get("/", response_model=List[Person])
-async def get_persons(request: Request):
+async def get_persons(request: Request, user=Depends(require_auth)):
     db = request.app.mongodb
     cursor = db.persons.find()
     persons = []
@@ -20,7 +21,7 @@ async def get_persons(request: Request):
     return persons
 
 @router.get("/{person_id}", response_model=Person)
-async def get_person(person_id: str, request: Request):
+async def get_person(person_id: str, request: Request, user=Depends(require_auth)):
     db = request.app.mongodb
     person_data = await db.persons.find_one({"person_id": person_id})
     if not person_data:

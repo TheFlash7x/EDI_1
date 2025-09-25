@@ -3,11 +3,12 @@ from typing import List
 from models import Case, Person, MatchResult, CaseResponse
 from fastapi import Request
 from uuid import uuid4
+from .auth import require_auth
 
 router = APIRouter()
 
 @router.post("/", response_model=Case)
-async def create_case(case: Case, request: Request):
+async def create_case(case: Case, request: Request, user=Depends(require_auth)):
     db = request.app.mongodb
 
     # Assign unique case_id if not provided
@@ -26,7 +27,7 @@ async def create_case(case: Case, request: Request):
     return case
 
 @router.get("/{case_id}", response_model=CaseResponse)
-async def get_case(case_id: str, request: Request):
+async def get_case(case_id: str, request: Request, user=Depends(require_auth)):
     db = request.app.mongodb
     case_data = await db.cases.find_one({"case_id": case_id})
     if not case_data:
