@@ -7,3 +7,6 @@ pillow
 tensorflow
 numpy
 pytest
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt
