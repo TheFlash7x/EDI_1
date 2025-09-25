@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+motor
+pydantic[email]
+python-multipart
+pillow
+tensorflow
+numpy
+pytest
